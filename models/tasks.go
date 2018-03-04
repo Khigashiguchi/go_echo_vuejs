@@ -9,6 +9,7 @@ import (
 type Task struct {
 	ID   int    `json:"id"`
 	Name string `json:"name"`
+	Done bool   `json::"done"`
 }
 
 type TaskCollection struct {
@@ -26,7 +27,7 @@ func GetTasks(db *sql.DB) TaskCollection {
 	result := TaskCollection{}
 	for rows.Next() {
 		task := Task{}
-		err := rows.Scan(&task.ID, &task.Name)
+		err := rows.Scan(&task.ID, &task.Name, &task.Done)
 		if err != nil {
 			panic(err)
 		}
@@ -36,7 +37,7 @@ func GetTasks(db *sql.DB) TaskCollection {
 }
 
 func PostTask(db *sql.DB, name string) (int64, error) {
-	sql := "INSERT INTO tasks(name) VALUES(?)"
+	sql := "INSERT INTO tasks(name, done) VALUES(?, 0)"
 
 	stmt, err := db.Prepare(sql)
 	if err != nil {
@@ -52,15 +53,19 @@ func PostTask(db *sql.DB, name string) (int64, error) {
 	return result.LastInsertId()
 }
 
-func PutTask(db *sql.DB, name string) (int64, error) {
-	sql := "UPDATE tasks SET name = ? WHERE id = ?"
+func PutTask(db *sql.DB, task Task) (int64, error) {
+	sql := "UPDATE tasks SET name = ?, done = ? WHERE id = ?"
 	stmt, err := db.Prepare(sql)
 	if err != nil {
 		panic(err)
 	}
 	defer stmt.Close()
 
-	result, err := stmt.Exec(name)
+	done := 0
+	if task.Done {
+		done = 1
+	}
+	result, err := stmt.Exec(task.Name, done, task.ID)
 	if err != nil {
 		panic(err)
 	}

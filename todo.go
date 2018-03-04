@@ -15,7 +15,7 @@ func main() {
 
 	e := echo.New()
 
-	e.File("/", "public/index.html")
+	e.Static("/", "public")
 	e.GET("/tasks", handlers.GetTasks(db))
 	e.POST("/tasks", handlers.PostTask(db))
 	e.PUT("/tasks", handlers.PutTask(db))
@@ -42,7 +42,8 @@ func migrate(db *sql.DB) {
 	sql := `
 	CREATE TABLE IF NOT EXISTS tasks(
 		id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-		name VARCHAR NOT NULL
+		name VARCHAR NOT NULL,
+		done INTEGER NOT NULL
 	);
 	`
 

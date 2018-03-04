@@ -37,7 +37,7 @@ func PutTask(db *sql.DB) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		var task models.Task
 		c.Bind(&task)
-		id, err := models.PutTask(db, task.Name)
+		id, err := models.PutTask(db, task)
 		if err != nil {
 			return err
 		}
