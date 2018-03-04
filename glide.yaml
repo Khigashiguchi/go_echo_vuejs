@@ -1,0 +1,6 @@
+package: github.com/Khigashiguchi/echo-vue-js
+import:
+- package: github.com/labstack/echo
+  version: ~3.2.6
+- package: github.com/mattn/go-sqlite3
+  version: ~1.6.0
